@@ -1,5 +1,7 @@
 # OpsPilot — AI 故障排查与值班 Copilot
 
+[![CI](https://github.com/hecheng666/OpsPilot/actions/workflows/ci.yml/badge.svg)](https://github.com/hecheng666/OpsPilot/actions/workflows/ci.yml)
+
 面向 Spring Boot 服务的 AI 运维 Agent：被观测服务可注入真实故障，OpsPilot 通过 **8 个工具 + ReAct 多步循环**完成「发现异常 → 收集证据 → 推断根因 → 提议处置 → 人工审批 → 复盘报告」闭环，全过程可回放、可审计、可评测。
 
 ## 架构
