@@ -35,6 +35,8 @@ ops-pilot/
 ├── scripts/                 # start-all.bat / start-demo.bat / start-server.bat / start-web.bat / init-db.sql
 └── docs/
     ├── plan.md              # 设计与 API 契约
+    ├── interview-prep.md    # 3 分钟讲解稿、追问 Q&A、简历条目
+    ├── demo-script.md       # 5 分钟演示脚本
     └── runbooks/            # 10 篇中文 runbook（启动时切 chunk + bge-m3 向量入库）
 ```
 
