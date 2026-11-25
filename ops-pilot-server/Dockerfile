@@ -13,7 +13,7 @@ RUN mvn -B -q -pl ops-pilot-server -am package -DskipTests
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 ENV TZ=Asia/Shanghai
-COPY --from=build /build/ops-pilot-server/target/*.jar app.jar
+COPY --from=build /build/ops-pilot-server/target/*.jar /app.jar
 COPY docs/runbooks ./docs/runbooks
 EXPOSE 8090
 ENTRYPOINT ["java", "-jar", "/app.jar"]

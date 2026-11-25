@@ -13,6 +13,6 @@ RUN mvn -B -q -pl ops-demo-service -am package -DskipTests
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 ENV TZ=Asia/Shanghai
-COPY --from=build /build/ops-demo-service/target/*.jar app.jar
+COPY --from=build /build/ops-demo-service/target/*.jar /app.jar
 EXPOSE 8081
 ENTRYPOINT ["java", "-jar", "/app.jar"]

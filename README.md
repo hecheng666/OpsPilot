@@ -85,6 +85,8 @@ docker compose up -d --build
 
 首次启动会自动建库建表并生成 5 万行订单数据，等待健康检查通过即可。停止：`docker compose down`；清空数据库：`docker compose down -v`。
 
+已在 Windows 11 + Docker Desktop 29.9.3 实测：4 个容器全部 healthy，控制台经 Nginx 反代 `/api` 正常，Agent 排查走真实 `qwen2.5:3b`（6 步工具调用、`degraded=0`）。Ollama 未启动时 Agent 自动降级为规则引擎（`degraded=1`），不影响其余功能。若本机访问 Docker Hub 受限，可先用镜像站拉取基础镜像再 `docker tag` 成官方名，构建阶段不再联网拉镜像。
+
 ## 测试
 
 ```bash
