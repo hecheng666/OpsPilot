@@ -151,3 +151,4 @@ Agent 永远不会调用 `execute_remediation`：Runtime 层直接拦截，只�
 - 单机单实例演示，不涉及 K8s / Prometheus / ELK；traceId 为模拟值。
 - MySQL 客户端不在 PATH 时需用绝对路径执行 `init-db.sql`。
 - `qwen2.5:3b` 为小模型，长对话偶发重复生成（Ollama 中断，Runtime 最多重试 2 次并限制输出长度）；Top-1 在边界样本上会出现 1 条波动，规则引擎保留为兜底。
+- `qwen2.5:7b` 在本机网络下多次拉取中断（大文件 CDN 超时），本文所有实测数据均基于 `qwen2.5:3b`；如需 7b，可预先下载后通过 `CHAT_MODEL=qwen2.5:7b` 切换。
