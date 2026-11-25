@@ -99,7 +99,7 @@ public class ExecuteRemediationTool implements Tool {
             action.setResult(truncate(String.valueOf(demoResult)));
             action.setExecutedAt(LocalDateTime.now());
             actionMapper.updateById(action);
-            audit(action, "EXECUTE_REMEDIATION", "执行成功：" + truncate(String.valueOf(demoResult)));
+            audit(action, "EXECUTE_REMEDIATION", "执行成功：" + truncate(String.valueOf(demoResult)), ctx.actor());
 
             data.put("status", "EXECUTED");
             data.put("demoResult", demoResult);
@@ -112,14 +112,14 @@ public class ExecuteRemediationTool implements Tool {
             action.setResult(truncate("调用 demo 失败: " + e.getMessage()));
             action.setExecutedAt(LocalDateTime.now());
             actionMapper.updateById(action);
-            audit(action, "EXECUTE_REMEDIATION", "执行失败：" + e.getMessage());
+            audit(action, "EXECUTE_REMEDIATION", "执行失败：" + e.getMessage(), ctx.actor());
             return ToolResult.fail("动作 #%d 执行失败：%s".formatted(actionId, e.getMessage()));
         }
     }
 
-    private void audit(RemediationAction action, String op, String detail) {
+    private void audit(RemediationAction action, String op, String detail, String actor) {
         AuditLog log = new AuditLog();
-        log.setActor("agent");
+        log.setActor(actor == null || actor.isBlank() ? "agent" : actor);
         log.setAction(op);
         log.setTarget("action#" + action.getId());
         log.setDetail(action.getActionType() + " " + detail);

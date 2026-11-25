@@ -72,7 +72,7 @@ public class ActionController {
                 "批准 %s → %s".formatted(action.getActionType(), action.getTarget()));
 
         // 批准后立刻执行；执行工具内部仍要求 APPROVED 状态
-        ToolContext ctx = ToolContext.of(action.getRunId(), action.getIncidentId(), serviceName);
+        ToolContext ctx = ToolContext.ofActor(action.getRunId(), action.getIncidentId(), serviceName, actor);
         ToolResult r = executeTool.execute(Map.of("actionId", id), ctx);
         resp.put("success", true);
         resp.put("approvedBy", actor);
