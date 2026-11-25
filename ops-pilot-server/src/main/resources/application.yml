@@ -1,0 +1,36 @@
+server:
+  port: ${SERVER_PORT:8090}
+
+spring:
+  application:
+    name: ops-pilot-server
+  datasource:
+    url: ${PILOT_DB_URL:jdbc:mysql://localhost:3306/ops_pilot?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true}
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:123456}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
+      continue-on-error: true
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+opspilot:
+  demo-base-url: ${DEMO_BASE_URL:http://localhost:8081}
+  service-name: order-demo
+  ollama-base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+  chat-model: ${CHAT_MODEL:qwen2.5:3b}
+  embed-model: ${EMBED_MODEL:bge-m3}
+
+logging:
+  level:
+    root: warn
+    com.opspilot: info
