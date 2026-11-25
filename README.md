@@ -28,15 +28,16 @@
 ## 目录结构
 
 ```
-ops-pilot/
+OpsPilot/
 ├── ops-demo-service/        # :8081 被观测订单服务 + 故障注入 + 内部接口
-├── ops-pilot-server/        # :8090 采集、告警、Runbook 检索、Agent Runtime、评测
+├── ops-pilot-server/        # :8090 采集、告警、Runbook 检索、Agent Runtime、评测、单元测试
 ├── ops-pilot-web/           # :5173 运维控制台
 ├── scripts/                 # start-all.bat / start-demo.bat / start-server.bat / start-web.bat / init-db.sql
 └── docs/
     ├── plan.md              # 设计与 API 契约
     ├── interview-prep.md    # 3 分钟讲解稿、追问 Q&A、简历条目
     ├── demo-script.md       # 5 分钟演示脚本
+    ├── OpsPilot-演示视频.mp4 # 1 分 43 秒无旁白字幕演示
     └── runbooks/            # 10 篇中文 runbook（启动时切 chunk + bge-m3 向量入库）
 ```
 
@@ -48,8 +49,8 @@ ops-pilot/
 # 1. 建库（只需一次）
 mysql -uroot -p123456 < scripts/init-db.sql
 
-# 2. 打包后端（parent 聚合两个模块）
-mvn -DskipTests package
+# 2. 打包后端（parent 聚合两个模块，会先跑单元测试）
+mvn package
 
 # 3. 安装前端依赖
 cd ops-pilot-web && npm install && cd ..
@@ -64,6 +65,21 @@ scripts\start-all.bat
 | 平台后端 | http://localhost:8090 |
 | 被观测服务 | http://localhost:8081 |
 
+## 测试
+
+```bash
+mvn test
+```
+
+36 个单元测试，不依赖 MySQL / Ollama / 外部网络：
+
+- 审批状态机与审计 actor：未审批拒绝执行、审批人透传、失败置 FAILED（`ExecuteRemediationToolTest`）
+- 处置提议：非法动作 / 缺理由拒绝，默认风险与目标推断（`ProposeRemediationToolTest`）
+- 报告契约与证据防伪：编造证据编号过滤、缺字段兜底（`AgentReportTest`）
+- 评测评分：Top-1 / Top-2 / Top-3 关键词命中、报告完整率（`EvalScoringTest`）
+- 症状阈值：慢 SQL / 缓存 / 线程池 / 下游的判定与处置优先级（`SymptomAnalyzerTest`）
+- 工具注册、参数解析与上下文（`ToolRegistryTest`、`ToolArgsTest`、`ToolContextTest`）
+
 ## 界面预览
 
 | 总览 | 故障演练 |
@@ -75,6 +91,8 @@ scripts\start-all.bat
 | ![Agent 时间线](docs/screenshots/agent-timeline.jpg) | ![诊断报告](docs/screenshots/agent-report.jpg) |
 
 ![评测中心](docs/screenshots/eval.jpg)
+
+完整演示（1 分 43 秒，无旁白、已烧录中文字幕）：[OpsPilot-演示视频.mp4](docs/OpsPilot-演示视频.mp4)
 
 ## 5 分钟演示路径
 

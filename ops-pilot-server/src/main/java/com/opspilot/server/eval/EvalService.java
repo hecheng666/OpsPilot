@@ -325,9 +325,9 @@ public class EvalService {
                 completeness(report), json(report));
     }
 
-    // ---------------- 评分 ----------------
+    // ---------------- 评分（包级可见，便于单测） ----------------
 
-    private int rank(List<String> keywords, String rootCause, List<String> alternatives) {
+    int rank(List<String> keywords, String rootCause, List<String> alternatives) {
         if (rootCause == null || keywords.isEmpty()) {
             return 0;
         }
@@ -342,7 +342,7 @@ public class EvalService {
         return 0;
     }
 
-    private boolean matches(List<String> keywords, String text) {
+    boolean matches(List<String> keywords, String text) {
         String lower = text.toLowerCase();
         for (String k : keywords) {
             if (!k.isBlank() && lower.contains(k.toLowerCase().replace(" ", ""))) {
@@ -360,7 +360,7 @@ public class EvalService {
     }
 
     /** 报告完整率：summary / 根因标题 / 置信度 / 影响面 / 备选列表 / 预防建议 6 项 */
-    private double completeness(Map<String, Object> report) {
+    double completeness(Map<String, Object> report) {
         int ok = 0;
         if (report.get("summary") != null && !String.valueOf(report.get("summary")).isBlank()) {
             ok++;

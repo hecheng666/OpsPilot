@@ -399,7 +399,7 @@ public class AgentService {
         return normalized;
     }
 
-    /** 报告契约兜底：缺字段补默认，证据编号只保留本 run 真实产生的 */
+    /** 报告契约兜底：缺字段补默认，证据编号只保留本 run 真实产生的（包级可见，便于单测） */
     @SuppressWarnings("unchecked")
     private Map<String, Object> normalizeReport(JsonNode finalNode, Set<String> runEvidence) {
         Map<String, Object> raw;
@@ -411,7 +411,7 @@ public class AgentService {
         return normalizeReport(raw, runEvidence);
     }
 
-    private Map<String, Object> normalizeReport(Map<String, Object> raw, Set<String> runEvidence) {
+    Map<String, Object> normalizeReport(Map<String, Object> raw, Set<String> runEvidence) {
         Map<String, Object> out = new LinkedHashMap<>();
         out.put("summary", strOr(raw.get("summary"), "（模型未提供摘要）"));
 
@@ -468,7 +468,7 @@ public class AgentService {
     }
 
     /** 只保留本 run 真实产生的证据编号，防止模型编造 */
-    private List<String> filterEvidence(Object ids, Set<String> runEvidence) {
+    List<String> filterEvidence(Object ids, Set<String> runEvidence) {
         List<String> out = new ArrayList<>();
         if (ids instanceof List<?> list) {
             for (Object o : list) {
