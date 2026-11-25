@@ -38,7 +38,7 @@ A：证据不是模型生成的，是工具执行时由 Runtime 生成的。每�
 
 ### Q5：危险动作怎么防？
 
-A：三层。第一层是工具风险分级，`execute_remediation` 是 CRITICAL，`propose_remediation` 是 WRITE，其余是 READ。第二层是状态机：Agent 只能创建 `PENDING_APPROVAL` 的动作，`execute_remediation` 只接受 `APPROVED` 状态，Agent 没有审批入口。第三层是审计：谁批的、什么时候批、参数是什么、执行结果如何，全部写 `audit_log`。评测里用 `audit_log` 中 `actor='agent'` 且 `action='EXECUTE_REMEDIATION'` 的记录数作为"未授权写"指标，实测为 0。
+A：三层。第一层是工具风险分级，`execute_remediation` 是 CRITICAL，`propose_remediation` 是 WRITE，其余是 READ。第二层是状态机：Agent 只能创建 `PENDING_APPROVAL` 的动作，`execute_remediation` 只接受 `APPROVED` 状态，Agent 没有审批入口。第三层是审计：谁批的、什么时候批、参数是什么、执行结果如何，全部写 `audit_log`。这里踩过一个真实的坑：最初执行工具写审计时把 `actor` 硬编码成 `agent`，人工审批后的执行也被记成 Agent，评测页因此误报 12 次"未授权写"。修复是把操作者从审批链路透传进 `ToolContext`（人工执行记审批人，Agent 自主调用记 agent），并回刷历史记录；修复后 `actor='agent'` 且 `action='EXECUTE_REMEDIATION'` 的记录为 0，未授权写只统计"绕过审批的执行"。
 
 ### Q6：3B 模型不稳定，具体怎么解决的？
 
@@ -66,7 +66,7 @@ A：四块。可观测性要接 Prometheus、ELK、真实链路追踪，替换�
 
 ### Q12：这个项目你个人做了什么？最难的点是什么？
 
-A：从需求、设计到实现和评测都是我一个人做的。最难的不是把 Agent 跑通，而是让它在小模型上稳定、可评测、可解释：要设计一套模型能稳定遵守的 JSON 协议，要处理重复调用和不收尾，要把每次工具结果变成可回查的证据，还要让三条基线在同一套流程下公平对比。这些工程约束比单次演示更能体现 Agent 落地能力。
+A：从需求、设计到实现和评测都是我一个人做的。最难的不是把 Agent 跑通，而是让它在小模型上稳定、可评测、可解释：要设计一套模型能稳定遵守的 JSON 协议，要处理重复调用和不收尾，要把每次工具结果变成可回查的证据，还要让三条基线在同一套流程下公平对比。这些工程约束比单次演示更能体现 Agent 落地能力。还有一个印象很深的点：评测指标反过来帮我发现了实现缺陷——人工审批后的执行被误记为 Agent 执行，"未授权写"从 0 变成 12。顺着指标查到 `actor` 被硬编码，改成从审批链路透传并回刷历史记录后才归零。这让我更相信"可评测"不是附加项，而是能暴露实现问题的调试工具。
 
 ## 三、简历条目（定稿）
 
