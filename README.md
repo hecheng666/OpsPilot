@@ -35,6 +35,7 @@ OpsPilot/
 ├── ops-pilot-server/        # :8090 采集、告警、Runbook 检索、Agent Runtime、评测、单元测试
 ├── ops-pilot-web/           # :5173 运维控制台
 ├── scripts/                 # start-all.bat / start-demo.bat / start-server.bat / start-web.bat / init-db.sql
+├── docker-compose.yml       # 一键启动：MySQL + demo + server + web
 └── docs/
     ├── plan.md              # 设计与 API 契约
     ├── interview-prep.md    # 3 分钟讲解稿、追问 Q&A、简历条目
@@ -66,6 +67,23 @@ scripts\start-all.bat
 | 控制台 | http://localhost:5173 |
 | 平台后端 | http://localhost:8090 |
 | 被观测服务 | http://localhost:8081 |
+
+## Docker 一键启动（可选）
+
+前置：Docker Desktop / Docker Engine（Compose v2）。Ollama 建议跑在宿主机（`ollama serve`，已拉取 `bge-m3`、`qwen2.5:3b`）；容器通过 `host.docker.internal:11434` 访问，未启动时 Agent 自动降级为规则引擎。
+
+```bash
+docker compose up -d --build
+```
+
+| 入口 | 地址 |
+|---|---|
+| 控制台 | http://localhost:15173 |
+| 平台后端 | http://localhost:18090 |
+| 被观测服务 | http://localhost:18081 |
+| MySQL | localhost:13306（root/123456） |
+
+首次启动会自动建库建表并生成 5 万行订单数据，等待健康检查通过即可。停止：`docker compose down`；清空数据库：`docker compose down -v`。
 
 ## 测试
 

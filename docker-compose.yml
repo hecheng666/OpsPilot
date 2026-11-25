@@ -1,0 +1,91 @@
+name: opspilot
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: opspilot-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+      MYSQL_ROOT_HOST: "%"
+      TZ: Asia/Shanghai
+    ports:
+      - "13306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p123456", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  ops-demo-service:
+    build:
+      context: .
+      dockerfile: ops-demo-service/Dockerfile
+    container_name: opspilot-demo
+    environment:
+      DEMO_DB_URL: jdbc:mysql://mysql:3306/ops_demo?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+      DB_USER: root
+      DB_PASSWORD: "123456"
+      TZ: Asia/Shanghai
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "18081:8081"
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 2 bash -c '</dev/tcp/127.0.0.1/8081' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
+
+  ops-pilot-server:
+    build:
+      context: .
+      dockerfile: ops-pilot-server/Dockerfile
+    container_name: opspilot-server
+    environment:
+      PILOT_DB_URL: jdbc:mysql://mysql:3306/ops_pilot?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+      DEMO_BASE_URL: http://ops-demo-service:8081
+      OLLAMA_BASE_URL: http://host.docker.internal:11434
+      DB_USER: root
+      DB_PASSWORD: "123456"
+      TZ: Asia/Shanghai
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      ops-demo-service:
+        condition: service_healthy
+    ports:
+      - "18090:8090"
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 2 bash -c '</dev/tcp/127.0.0.1/8090' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 90s
+
+  ops-pilot-web:
+    build:
+      context: .
+      dockerfile: ops-pilot-web/Dockerfile
+    container_name: opspilot-web
+    depends_on:
+      ops-pilot-server:
+        condition: service_healthy
+    ports:
+      - "15173:80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+volumes:
+  mysql-data:

@@ -1,0 +1,11 @@
+.git
+.github
+.gitignore
+**/target
+**/node_modules
+**/dist
+.idea
+.vscode
+docs/screenshots
+docs/*.mp4
+*.mp4
