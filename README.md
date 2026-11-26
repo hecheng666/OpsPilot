@@ -93,7 +93,7 @@ docker compose up -d --build
 mvn test
 ```
 
-36 个单元测试，不依赖 MySQL / Ollama / 外部网络：
+42 个单元测试，不依赖 MySQL / Ollama / 外部网络：
 
 - 审批状态机与审计 actor：未审批拒绝执行、审批人透传、失败置 FAILED（`ExecuteRemediationToolTest`）
 - 处置提议：非法动作 / 缺理由拒绝，默认风险与目标推断（`ProposeRemediationToolTest`）
@@ -101,6 +101,7 @@ mvn test
 - 评测评分：Top-1 / Top-2 / Top-3 关键词命中、报告完整率（`EvalScoringTest`）
 - 症状阈值：慢 SQL / 缓存 / 线程池 / 下游的判定与处置优先级（`SymptomAnalyzerTest`）
 - 工具注册、参数解析与上下文（`ToolRegistryTest`、`ToolArgsTest`、`ToolContextTest`）
+- 告警自动恢复：阈值对称判定、连续 3 个窗口正常才关闭、指标再次异常重置计数（`AlertRecoveryTest`）
 
 ## 界面预览
 
@@ -122,7 +123,8 @@ mvn test
 2. **事故中心** `/incidents`：告警评估器自动生成/合并事故；点开详情看待审批处置与证据链。
 3. **Agent 排查** `/agent`：选择刚产生的事故，点击「开始排查」，SSE 实时推送 `query_metrics → search_logs → get_recent_changes → search_runbooks` 等步骤，产出带 `E-xxxx` 证据引用的结构化报告，并自动创建 **PENDING** 处置单。
 4. **审批**：在事故详情中「批准并执行」，动作经审计后调用 demo 内部接口生效（Agent 自身永远无权执行）。
-5. **评测中心** `/eval`：选基线（RULE / RAG_ONLY / FULL_AGENT）与场景，一键跑 20 场景评测，查看命中率、步数、耗时、证据准确率、报告完整率与未授权写次数，并导出 JSON。
+5. **自动恢复**：故障恢复后，事故对应指标连续 3 个采集窗口正常即自动关闭并写 `resolvedAt`；也可手动关闭。
+6. **评测中心** `/eval`：选基线（RULE / RAG_ONLY / FULL_AGENT）与场景，一键跑 20 场景评测，查看命中率、步数、耗时、证据准确率、报告完整率与未授权写次数，并导出 JSON。
 
 ## 核心设计
 
