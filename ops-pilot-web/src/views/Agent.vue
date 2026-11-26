@@ -69,7 +69,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import ElMessage from 'element-plus/es/components/message/index'
 import StepTimeline from '../components/StepTimeline.vue'
 import ReportView from '../components/ReportView.vue'
 import EvidenceCard from '../components/EvidenceCard.vue'

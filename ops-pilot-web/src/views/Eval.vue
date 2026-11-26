@@ -133,8 +133,14 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
-import { ElMessage } from 'element-plus'
-import * as echarts from 'echarts'
+import ElMessage from 'element-plus/es/components/message/index'
+import * as echarts from 'echarts/core'
+import { BarChart } from 'echarts/charts'
+import { GridComponent, LegendComponent, TooltipComponent } from 'echarts/components'
+import { CanvasRenderer } from 'echarts/renderers'
+
+// 按需注册：柱状图 + 直角坐标系/提示框/图例 + Canvas 渲染
+echarts.use([BarChart, GridComponent, TooltipComponent, LegendComponent, CanvasRenderer])
 import api from '../api'
 
 const scenarios = ref([])

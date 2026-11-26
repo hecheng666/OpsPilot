@@ -72,7 +72,7 @@
 
 <script setup>
 import { ref, reactive, onMounted, onUnmounted } from 'vue'
-import { ElMessage } from 'element-plus'
+import ElMessage from 'element-plus/es/components/message/index'
 import MetricCard from '../components/MetricCard.vue'
 import api from '../api'
 

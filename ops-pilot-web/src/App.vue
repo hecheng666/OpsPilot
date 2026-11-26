@@ -1,28 +1,31 @@
 <template>
-  <div class="layout">
-    <header class="topbar">
-      <div class="brand">
-        <span class="logo">OP</span>
-        <span class="name">OpsPilot</span>
-        <span class="sub">AI 运维值班台</span>
-      </div>
-      <nav class="nav">
-        <router-link to="/" class="nav-item" :class="{ active: $route.path === '/' }">总览</router-link>
-        <router-link to="/faults" class="nav-item" :class="{ active: $route.path === '/faults' }">故障演练</router-link>
-        <router-link to="/incidents" class="nav-item" :class="{ active: $route.path === '/incidents' }">事故中心</router-link>
-        <router-link to="/agent" class="nav-item" :class="{ active: $route.path === '/agent' }">Agent 排查</router-link>
-        <router-link to="/eval" class="nav-item" :class="{ active: $route.path === '/eval' }">评测中心</router-link>
-      </nav>
-      <div class="right mono">{{ now }}</div>
-    </header>
-    <main class="content">
-      <router-view />
-    </main>
-  </div>
+  <el-config-provider :locale="zhCn">
+    <div class="layout">
+      <header class="topbar">
+        <div class="brand">
+          <span class="logo">OP</span>
+          <span class="name">OpsPilot</span>
+          <span class="sub">AI 运维值班台</span>
+        </div>
+        <nav class="nav">
+          <router-link to="/" class="nav-item" :class="{ active: $route.path === '/' }">总览</router-link>
+          <router-link to="/faults" class="nav-item" :class="{ active: $route.path === '/faults' }">故障演练</router-link>
+          <router-link to="/incidents" class="nav-item" :class="{ active: $route.path === '/incidents' }">事故中心</router-link>
+          <router-link to="/agent" class="nav-item" :class="{ active: $route.path === '/agent' }">Agent 排查</router-link>
+          <router-link to="/eval" class="nav-item" :class="{ active: $route.path === '/eval' }">评测中心</router-link>
+        </nav>
+        <div class="right mono">{{ now }}</div>
+      </header>
+      <main class="content">
+        <router-view />
+      </main>
+    </div>
+  </el-config-provider>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
 
 const now = ref('')
 let timer

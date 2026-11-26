@@ -4,7 +4,13 @@
 
 <script setup>
 import { ref, watch, onMounted, onUnmounted } from 'vue'
-import * as echarts from 'echarts'
+import * as echarts from 'echarts/core'
+import { LineChart } from 'echarts/charts'
+import { GridComponent, LegendComponent, TooltipComponent } from 'echarts/components'
+import { CanvasRenderer } from 'echarts/renderers'
+
+// 按需注册：折线图 + 直角坐标系/提示框/图例 + Canvas 渲染
+echarts.use([LineChart, GridComponent, TooltipComponent, LegendComponent, CanvasRenderer])
 
 const props = defineProps({
   // [{ name, color, unit, data: [{ts, value}] }]
