@@ -1,17 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Overview from '../views/Overview.vue'
-import Faults from '../views/Faults.vue'
-import Incidents from '../views/Incidents.vue'
-import Agent from '../views/Agent.vue'
-import Eval from '../views/Eval.vue'
 
+// 路由懒加载：各页面独立 chunk，首屏只加载当前页
 export default createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/', name: 'overview', component: Overview },
-    { path: '/faults', name: 'faults', component: Faults },
-    { path: '/incidents', name: 'incidents', component: Incidents },
-    { path: '/agent', name: 'agent', component: Agent },
-    { path: '/eval', name: 'eval', component: Eval }
+    { path: '/', name: 'overview', component: () => import('../views/Overview.vue') },
+    { path: '/faults', name: 'faults', component: () => import('../views/Faults.vue') },
+    { path: '/incidents', name: 'incidents', component: () => import('../views/Incidents.vue') },
+    { path: '/agent', name: 'agent', component: () => import('../views/Agent.vue') },
+    { path: '/eval', name: 'eval', component: () => import('../views/Eval.vue') }
   ]
 })
