@@ -38,7 +38,7 @@ OpsPilot/
 ├── docker-compose.yml       # 一键启动：MySQL + demo + server + web
 └── docs/
     ├── plan.md              # 设计与 API 契约
-    ├── interview-prep.md    # 3 分钟讲解稿、追问 Q&A、简历条目
+    ├── interview-prep.md    # 3 分钟讲解稿、追问 Q&A
     ├── demo-script.md       # 5 分钟演示脚本
     ├── OpsPilot-演示视频.mp4 # 1 分 43 秒无旁白字幕演示
     └── runbooks/            # 10 篇中文 runbook（启动时切 chunk + bge-m3 向量入库）
