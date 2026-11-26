@@ -34,6 +34,12 @@ public class AlertEvaluator {
     @Value("${opspilot.service-name}")
     private String serviceName;
 
+    /** 冷启动预热期：缓存逐步填充，命中率天然偏低，此窗口内不评估缓存命中率 */
+    @Value("${opspilot.alert-warmup-seconds:180}")
+    private long warmupSeconds;
+
+    private final long startedAtNanos = System.nanoTime();
+
     public AlertEvaluator(MetricPointMapper metricPointMapper, IncidentMapper incidentMapper,
                           MetricCollector metricCollector) {
         this.metricPointMapper = metricPointMapper;
@@ -72,7 +78,8 @@ public class AlertEvaluator {
         if (threadMax > 0 && threadActive / threadMax > 0.8) {
             fireOrMerge("订单线程池使用率超过 80%（active=" + (int) threadActive + "/" + (int) threadMax + "）", "P2", "THREAD_POOL_SATURATED");
         }
-        if (cacheHitRate > 0 && cacheHitRate < 60) {
+        // 冷启动预热期内缓存尚未填充，命中率偏低属正常现象，不触发告警
+        if (!inWarmup() && cacheHitRate > 0 && cacheHitRate < 60) {
             fireOrMerge("缓存命中率低于 60%（当前 " + fmt(cacheHitRate) + "%）", "P2", "CACHE_HIT_LOW");
         }
         if (dbRt > 500) {
@@ -100,6 +107,10 @@ public class AlertEvaluator {
         incident.setCreatedAt(LocalDateTime.now());
         incidentMapper.insert(incident);
         log.info("创建事故 #{}: {}", incident.getId(), titleWithValue);
+    }
+
+    private boolean inWarmup() {
+        return System.nanoTime() - startedAtNanos < warmupSeconds * 1_000_000_000L;
     }
 
     /** 从标题中提取稳定特征（去掉括号内的动态值） */
